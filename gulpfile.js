@@ -1,9 +1,14 @@
 const { src, dest, parallel, series, watch } = require("gulp");
 const pug = require("gulp-pug");
 const sass = require("gulp-sass");
-const concat = require("gulp-concat");
 const imagemin = require("gulp-imagemin");
 const browserSync = require("browser-sync").create();
+const rollup = require("gulp-better-rollup");
+const babel = require("rollup-plugin-babel");
+const resolve = require("rollup-plugin-node-resolve");
+const commonjs = require("rollup-plugin-commonjs");
+const sourcemaps = require("gulp-sourcemaps");
+const terser = require("rollup-plugin-terser");
 
 function html() {
   return src("./src/pug/*.pug")
@@ -28,14 +33,37 @@ function prodCss() {
 }
 
 function js() {
-  return src("./src/js/*.js", { sourcemaps: true })
-    .pipe(concat("scripts.min.js"))
-    .pipe(dest("./src/scripts", { sourcemaps: true }));
+  return src("./src/js/*.js")
+    .pipe(sourcemaps.init())
+    .pipe(
+      rollup(
+        {
+          plugins: [commonjs(), resolve(), babel()]
+        },
+        "umd"
+      )
+    )
+    .pipe(sourcemaps.write("./"))
+    .pipe(dest("./src/scripts"));
 }
 function prodJs() {
-  return src("./src/js/*.js", { sourcemaps: true })
-    .pipe(concat("scripts.min.js"))
-    .pipe(dest("./dist/scripts", { sourcemaps: true }));
+  return src("./src/js/*.js")
+    .pipe(
+      rollup(
+        {
+          plugins: [
+            commonjs(),
+            resolve(),
+            babel({
+              runtimeHelpers: true
+            }),
+            terser.terser()
+          ]
+        },
+        "umd"
+      )
+    )
+    .pipe(dest("./dist/scripts"));
 }
 
 function prodImages() {
