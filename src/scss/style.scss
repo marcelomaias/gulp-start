@@ -1,0 +1,30 @@
+$bg-color: #eee;
+$front-color: #333;
+
+body {
+  background-color: $bg-color;
+  color: $front-color;
+  font-size: 22px;
+  font-family: -apple-system, "Helvetica Neue", sans-serif;
+}
+img {
+  width: 100%;
+  height: auto;
+}
+.logo {
+  width: 80px;
+  display: block;
+}
+#mainHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  nav {
+    display: flex;
+    justify-content: flex-end;
+    a {
+      display: inline-block;
+      margin-left: 1rem;
+    }
+  }
+}
